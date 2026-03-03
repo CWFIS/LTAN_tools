@@ -4,6 +4,8 @@ Your file must contain the following variables: HOUR, DAY, MONTH, YEAR, STATION 
 
 Variable names can vary, you will specify them within the code itself. 
 
-This code is a work in progress and will be updated often. It will auto update if you have GIT installed on your computer. If you not you can download the most recent version from: []
+This code is a work in progress and will be updated often. It will auto update if you have GIT installed on your computer. If you not you can download the most recent version from: [https://github.com/CWFIS/LTAN_tools.git]
+
+Sample_data.csv contains sample data from BC weather stations for you to explore!
 
 Questions and comments please contact Rachel @ rachel.dietrich@nrcan-rncan.gc.ca
