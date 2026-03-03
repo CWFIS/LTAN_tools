@@ -1,3 +1,14 @@
+# ============================================================
+# LTAN and Climatology Tools
+# ------------------------------------------------------------
+# Description: Simple statistics and plotting tools for climatology data. 
+#              Development ongoing, all comments and suggestions are appreciated!
+# Author: Rachel Dietrich - rachel.dietrich@nrcan-rncan.gc.ca
+# Organization: Canadian Forest Service
+# Repository: https://github.com/CWFIS/LTAN_tools
+# ============================================================
+
+
 # ---- Packages ----
 if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(
@@ -29,7 +40,9 @@ percentiles <- c(
   p95 = 0.95
 )
 
-# Define spread thresholds as a list of expressions, you can add as many as you'd like
+# Define spread thresholds as a list of expressions, you can add as many as 
+# you'd like. Can choose from FFMC, ISI, DMC, DC, BUI, FWI. Does not support 
+# windspeed yet. 
 spread_thresholds <- list(
   quote(ISI >= 6 & BUI >= 50),
   quote(ISI >= 7.5 & BUI >= 50),
