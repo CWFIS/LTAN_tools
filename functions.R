@@ -347,24 +347,34 @@ generate_windroses <- function(wx_data) {
 # 12. Update from Git
 # ------------------------
 auto_update <- function() {
-  if (!dir.exists(".git")) {
-    message("No Git repository found. Skipping auto-update.")
-    return(invisible(FALSE))
-  }
+  
+  if (!dir.exists(".git")) return(invisible(FALSE))
+  
+  message("Checking for updates from GitHub...")
   
   # Check for local changes
   status <- system("git status --porcelain", intern = TRUE)
+  
   if (length(status) > 0) {
-    warning("Local changes detected. Auto-update skipped to avoid overwriting your work.")
-    return(invisible(FALSE))
+    
+    message("Local changes detected.")
+    response <- readline(
+      prompt = "Updating may overwrite local edits. Continue? (y/n): "
+    )
+    
+    if (tolower(response) != "y") {
+      message("Update cancelled.")
+      return(invisible(FALSE))
+    }
   }
   
-  message("Checking for updates from GitHub...")
-  # Fetch and reset main branch
+  # Perform update
   system("git fetch origin main", intern = TRUE)
   system("git reset --hard origin/main", intern = TRUE)
+  
   message("Auto-update complete.")
   invisible(TRUE)
 }
 
+# Run when sourced
 auto_update()
