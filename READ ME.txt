@@ -1,0 +1,9 @@
+Save your CSV with hourly weather data directly into this folder. 
+
+Your file must contain the following variables: HOUR, DAY, MONTH, YEAR, STATION NAME, all FWI variables, hourly wx (temperature, RH, Windspeed and wind direction, precip). 
+
+Variable names can vary, you will specify them within the code itself. 
+
+This code is a work in progress and will be updated often. It will auto update if you have GIT installed on your computer. If you not you can download the most recent version from: []
+
+Questions and comments please contact Rachel @ rachel.dietrich@nrcan-rncan.gc.ca
