@@ -224,7 +224,75 @@ calc_monthly_weather_for_thresholds <- function(wx_hourly, thresholds) {
 # ------------------------
 # 9. Percentile ribbon plot
 # ------------------------
-plot_percentile_ribbons_station <- function(data, variable, year_line = NULL, station_name = NULL) {
+
+plot_percentile_ribbons_station <- function(data, variable, 
+                                            year_line = NULL, 
+                                            station_name = NULL,
+                                            start_month = START_MONTH, 
+                                            end_month = END_MONTH) {
+  var <- enquo(variable)
+  var_name <- as_label(var)
+  
+  df <- data %>%
+    mutate(
+      DATE = as.Date(DATE),
+      DOY  = yday(DATE),
+      MONTH = month(DATE)
+    ) %>%
+    filter(MONTH >= start_month & MONTH <= end_month)
+  
+  percentiles_df <- df %>%
+    group_by(DOY) %>%
+    summarize(
+      p10 = quantile(!!var, 0.10, na.rm = TRUE),
+      p25 = quantile(!!var, 0.25, na.rm = TRUE),
+      p50 = quantile(!!var, 0.50, na.rm = TRUE),
+      p75 = quantile(!!var, 0.75, na.rm = TRUE),
+      p90 = quantile(!!var, 0.90, na.rm = TRUE),
+      p95 = quantile(!!var, 0.95, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(DATE = as.Date(DOY - 1, origin = "2000-01-01"))
+  
+  year_data <- df %>%
+    filter(YEAR == year_line) %>%
+    select(DOY, value = !!var) %>%
+    mutate(DATE = as.Date(DOY - 1, origin = "2000-01-01"))
+  
+  fill_colors <- c(
+    "Min-Q10" = "#d9ef8b",
+    "Q25-Q50" = "#ffffbf",
+    "Q50-Q75" = "#fee08b",
+    "Q75-Q90" = "#fc8d59",
+    "Q90-Max" = "#d73027"
+  )
+  
+  line_color <- setNames("black", paste(year_line, "Current"))
+  
+  ggplot() +
+    geom_ribbon(data = percentiles_df, aes(x = DATE, ymin = p10, ymax = p25, fill = "Min-Q10"), alpha = 0.5) +
+    geom_ribbon(data = percentiles_df, aes(x = DATE, ymin = p25, ymax = p50, fill = "Q25-Q50"), alpha = 0.5) +
+    geom_ribbon(data = percentiles_df, aes(x = DATE, ymin = p50, ymax = p75, fill = "Q50-Q75"), alpha = 0.5) +
+    geom_ribbon(data = percentiles_df, aes(x = DATE, ymin = p75, ymax = p90, fill = "Q75-Q90"), alpha = 0.5) +
+    geom_ribbon(data = percentiles_df, aes(x = DATE, ymin = p90, ymax = p95, fill = "Q90-Max"), alpha = 0.5) +
+    geom_line(data = year_data, aes(x = DATE, y = value, color = paste(year_line, "Current")), size = 1) +
+    scale_fill_manual(name = "Percentiles", values = fill_colors, guide = guide_legend(reverse = TRUE)) +
+    scale_color_manual(name = NULL, values = line_color) +
+    scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+    labs(
+      x = "Date",
+      y = var_name,
+      title = ifelse(
+        is.null(station_name),
+        paste("Percentile ribbons for", var_name),
+        paste("Percentile ribbons for", var_name, "at", station_name)
+      )
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+#plot_percentile_ribbons_station <- function(data, variable, year_line = NULL, station_name = NULL) {
   var <- enquo(variable)
   var_name <- as_label(var)
   
@@ -269,7 +337,7 @@ plot_percentile_ribbons_station <- function(data, variable, year_line = NULL, st
 # ------------------------
 # 10. Plot weather events
 # ------------------------
-plot_weather_events <- function(data, ..., start_month = 1, end_month = 12) {
+plot_weather_events <- function(data, ..., start_month = START_MONTH, end_month = END_MONTH) {
   conditions <- enquos(...)
   if(length(conditions) == 0) stop("Provide at least one condition, e.g. ISI >= 8")
   

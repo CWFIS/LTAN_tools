@@ -21,13 +21,15 @@ source("functions.R")
 
 # ---- User Inputs ----
 
-fire_name <- "TESTFIRE2026"           # name of fire, 
+fire_name <- "FORTNELSON25"           # name of fire, 
 data<-fread("insert_your_file_here.csv") # path to your CSV,you can put this csv
                                          # in the same folder as this R project!
 
-#data<-fread("Sample_data.csv")  # you can uncomment and use the sample data
+data<-fread("Sample_data.csv")  # you can uncomment and use the sample data
 
 year_to_highlight <- 2025
+START_MONTH <- 4  #start  of fire season
+END_MONTH   <- 10 #end of fire season
 start_year<-NULL # NULL= all data, change to a start year otherwise
 stations_to_analyze <- NULL # NULL = all stations or use c("Station ID1"...)
 variables <- c("FFMC","ISI","DMC","DC","BUI","FWI","ACCUM_PRECIP")
@@ -44,9 +46,9 @@ percentiles <- c(
 # you'd like. Can choose from FFMC, ISI, DMC, DC, BUI, FWI. Does not support 
 # windspeed yet. 
 spread_thresholds <- list(
-  quote(ISI >= 6 & BUI >= 50),
-  quote(ISI >= 7.5 & BUI >= 50),
-  quote(ISI >= 10 & BUI >= 50)
+  quote(ISI >= 6 & FWI>=18),
+  quote(FFMC>=90 & FWI>=20 & ISI >= 7 & DMC >= 60),
+  quote(FFMC>=92 & FWI>=35 & ISI >= 11 & BUI >= 60)
 )
 
 # Match your data columns EXACTLY, ensure all these variables exist in your data
